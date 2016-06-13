@@ -8,6 +8,7 @@ gem 'sqlite3'
 
 gem 'rails-api'
 gem "active_model_serializers", github: "rails-api/active_model_serializers"
+gem 'rack-cors'
 
 # Use SCSS for stylesheets
 # gem 'sass-rails', '~> 4.0.2'

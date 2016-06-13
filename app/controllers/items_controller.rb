@@ -2,9 +2,8 @@ class ItemsController < ApplicationController
   before_action :load_item, only: [:destroy, :update]
 
   def index
-    @items = Item
+    @items = Item.all
     @items = @items.where(function_id: params[:function_id]) unless params[:function_id].blank?
-    @items = @items.order_by_function_name
 
     # The :scope deal is a super hacky way to hide the items that come
     # back in the relationships part of each included function.
