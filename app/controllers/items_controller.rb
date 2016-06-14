@@ -2,13 +2,8 @@ class ItemsController < ApplicationController
   before_action :load_item, only: [:destroy, :update]
 
   def index
-    @items = Item.all
-    @items = @items.where(function_id: params[:function_id]) unless params[:function_id].blank?
-
-    # The :scope deal is a super hacky way to hide the items that come
-    # back in the relationships part of each included function.
-    # See app/serializers/function_serializer.rb :(
-    render json: @items, include: :function, scope: :hide_items
+    @items = Item.includes(:function)
+    render json: @items, include: :function
   end
 
   def create
@@ -18,7 +13,6 @@ class ItemsController < ApplicationController
     else
       render json: @item,
         status: :unprocessable_entity,
-        adapter: :json_api,
         serializer: ActiveModel::Serializer::ErrorSerializer
     end
   end
@@ -32,21 +26,9 @@ class ItemsController < ApplicationController
   #   @item.delete
   #   render json: @item
   # end
+
   private
   def item_params
     ActiveModelSerializers::Deserialization.jsonapi_parse(params.permit!)
-    # HashWithIndifferentAccess.new({
-    #   data: {
-    #     type: "items",
-    #     attributes: {
-    #       weight: "300"
-    #     },
-    #     relationships: {
-    #       function: {
-    #         data: { type: "functions", id: "63" }
-    #       }
-    #     }
-    #   }
-    # })
   end
 end

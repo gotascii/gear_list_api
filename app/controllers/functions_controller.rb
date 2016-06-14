@@ -1,10 +1,12 @@
 class FunctionsController < ApplicationController
-  # before_filter :load_new_item, :only => [:show]
-  # before_filter :load_functions, :only => [:index, :show]
-
   def index
     @functions = Function.all
-    render json: @functions, scope: :hide_items
+    render json: @functions, each_serializer: FunctionPreviewSerializer
+  end
+
+  def show
+    @function = Function.find(params[:id])
+    render json: @function, include: '**'
   end
 
   private

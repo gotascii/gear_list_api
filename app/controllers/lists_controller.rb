@@ -1,30 +1,26 @@
 class ListsController < ApplicationController
-  # before_filter :load_list, :only => [:show, :edit, :update, :destroy]
-  # before_filter :load_lists, :only => [:index, :edit]
+  before_filter :load_list, :only => [:show, :destroy]
 
   def index
     @lists = List.all
-    render json: @lists
+    render json: @lists, each_serializer: ListPreviewSerializer
   end
 
-  # def show
-  #   @items = Item.order_by_function_name
-  #   @picks = @list.picks.order_by_item_function_name
-  #   @pick = Pick.new(:list => @list)
-  # end
+  def show
+    render json: @list, include: '**'
+  end
 
   def create
     factory = ListFactory.new(list_params)
     @list = factory.create
     if @list.valid?
-      render json: @list
+      render json: @list, include: '**'
     else
-      render json: @list, status: 422, serializer: ActiveModel::Serializer::ErrorSerializer
+      render json: @list,
+        status: :unprocessable_entity,
+        serializer: ActiveModel::Serializer::ErrorSerializer
     end
   end
-
-  # def edit
-  # end
 
   # def update
   #   @list.update_attributes(list_params)
@@ -32,19 +28,14 @@ class ListsController < ApplicationController
   # end
 
   def destroy
-    @list = List.find(params[:id])
     @list.destroy
     head :no_content
   end
 
   private
-  # def load_list
-  #   @list = List.find(params[:id])
-  # end
-
-  # def load_lists
-  #   @lists = List.order_by_name
-  # end
+  def load_list
+    @list = List.find(params[:id])
+  end
 
   def list_params
     ActiveModelSerializers::Deserialization.jsonapi_parse(params.permit!)

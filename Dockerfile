@@ -25,4 +25,7 @@ USER gotascii
 RUN gem install bundler
 RUN bundle install --path=vendor/bundle --jobs 20 --retry 5
 
-CMD rm -f tmp/pids/server.pid && bundle exec rails s -b '0.0.0.0'
+ENV PORT 3000
+ENV RACK_ENV development
+
+CMD rm -rf tmp/pids/* && bundle exec puma -t 5:5 -p ${PORT} -e ${RACK_ENV}
