@@ -1,8 +1,8 @@
 class ItemsController < ApplicationController
-  before_action :load_item, only: [:destroy, :update]
+  # before_action :load_item, only: [:destroy, :update]
 
   def index
-    @items = Item.includes(:function)
+    @items = Item.includes(:function).order("functions.name ASC, items.name ASC").limit(params[:limit]).offset(params[:offset])
     render json: @items, include: :function
   end
 
@@ -22,10 +22,11 @@ class ItemsController < ApplicationController
   #   render json: @item
   # end
 
-  # def destroy
-  #   @item.delete
-  #   render json: @item
-  # end
+  def destroy
+    @item = Item.find(params[:id])
+    @item.delete
+    render json: @item
+  end
 
   private
   def item_params
